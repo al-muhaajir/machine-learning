@@ -1,11 +1,18 @@
 #include <cmath>
 #include <cassert>
+#include <map>
 #include "statistics.h"
 
 //	Euler's number
 const double e = exp(1.0);
 
-
+// Map containing z-scores and corresponding percentiles
+const std::map<double, double> z_percentiles = { {-3.09, 0.001}, {-3.08, 0.001}, {-3.07, 0.0011}, {-3.06, 0.0011}, {-3.05, 0.0011},
+	{-3.04, 0.0012}, {-3.03, 0.0012}, {-3.02, 0.0013}, {-3.01, 0.0013}, {-3.00, 0.0013},
+	{-2.99, 0.0014}, {-2.98, 0.0014}, {-2.97, 0.0015}, {-2.96, 0.0015}, {-2.95, 0.0016},
+	{-2.94, 0.0016}, {-2.93, 0.0017}, {-2.92, 0.0018}, {-2.91, 0.0018}, {-2.90, 0.0019},
+	{-2.89, 0.0019}
+};
 
 /**
 *	Calculates the factorial of an integer.
@@ -48,6 +55,98 @@ unsigned long long choose(int n, int k)
 
 
 
+
+
+
+/**
+*	Calculates the standard score (z-score) of a data point.
+*	
+*	@param datapoint The observation.
+*	@param mean The population mean.
+*	@param StdDev The population standard deviation.
+*	@return The standard score, i.e, the number of standard deviations the observed data point deviates from the mean by.
+*/
+inline double z(double datapoint, double mean, double StdDev)
+{
+	return ((datapoint - mean) / StdDev);
+}
+
+/**
+*	Calculates the CDF of a Gaussian distribution.
+* 
+*	@param z The z-score.
+*	@return The cumulative distribution function.
+*/
+inline double standard_normal_cdf(double z)
+{
+	return 0.5 * (1 + erf(z / sqrt(2)));
+}
+
+/**
+*	Calculates the nth percentile of a set of normally distributed data.
+* 
+*	@param container The pointer to the vector containing the set.
+*	@param percent The percentile the caller is interested in.
+*	@return The data point that is the nth percentile.
+*/
+inline double nth_percentile(std::vector<int>& container, double percent)
+{
+	// unimplemented
+
+}
+
+/**
+*	Calculates the percentile of a specific data point in a standard normal distribution.
+* 
+*	@param container Pointer to the vector containing the set of data.
+*	@return The percentile the data point lies in.
+*/
+inline double z_to_percentile(std::vector<int>& container, double z)
+{
+	return standard_normal_cdf(z) * 100;
+}
+
+/**
+*	Calculates the mean of a set.
+*
+*	@param container Container that contains the set.
+*	@return The mean.
+*/
+inline double mean(std::vector<int>& container)
+{
+	long sum = 0;
+	for (int i : container)
+		sum += i;
+	return sum / container.size();
+}
+
+/**
+*	Calculates the standard deviation of a set.
+* 
+*	@param container Container that contains the set.
+*	@return The standard deviation.
+*/
+inline double StdDev(std::vector<int>& container)
+{
+	double average = mean(container);
+	long sum = 0;
+	for (int i : container)
+	{
+		sum += pow(i - average, 2);
+	}
+	return sqrt(sum / container.size() - 1);
+}
+
+/**
+*	Calculates the variance of a set.
+*
+*	@param container Container that contains the set.
+*	@return The variance.
+*/
+inline double variance(std::vector<int>& container)
+{
+	return pow(StdDev(container), 2);
+}
 
 
 
@@ -314,9 +413,9 @@ inline double hg_variance(int N, int M, int n)
 *	@param successes Number of successes whose PMF is being calculated.
 *	@return Probability of observing the specified number of successes.
 */
-inline double pois_pmf(double mean, int successes)
+inline double pois_pmf(double mean, int k)
 {
-	return (pow(mean, successes) * pow(e, -mean)) / factorial(successes);
+	return (pow(mean, k) * pow(e, -mean)) / factorial(k);
 }
 
 
