@@ -1,7 +1,24 @@
 #pragma once
+#include <vector>
 #ifndef STATISTICS_H
 #define STATISTICS_H
 
+// gaussian statistics
+inline double z(double datapoint, double mean, double StdDev);
+inline double standard_normal_cdf(double z);
+
+inline double nth_percentile(std::vector<int>& container, double percent);
+inline double z_to_percentile(std::vector<int>& container, double z);
+inline double mean(std::vector<int>& container);
+inline double median(std::vector<int>& container);
+inline double mode(std::vector<int>& container);
+inline double StdDev(std::vector<int>& container);
+inline double variance(std::vector<int>& container);
+
+// normal random variables
+inline double n_pmf(double x, double mean, double variance);
+
+// discrete random variables
 inline double uni_pmf(int a, int b, int x);
 inline double uni_mean(int a, int b);
 inline double uni_variance(int a, int b);
@@ -26,7 +43,22 @@ inline double hg_pmf(int N, int M, int n, int k);
 inline double hg_mean(int N, int M, int n);
 inline double hg_variance(int N, int M, int n);
 
-inline double pois_pmf(double mean, int successes);
+inline double pois_pmf(double mean, int k);
+
+
+
+/*
+*	Models a normal random variable.
+*/
+class N
+{
+private:
+	double mean;
+	double variance;
+public:
+	N(double mean, double variance);
+	double pmf(int x);
+};
 
 /*
 *	Abstract class that models a discrete random variable.
@@ -140,6 +172,14 @@ public:
 	double pmf(int k) override;
 	double ExpectedValue() override;
 	double variance() override;
+};
+
+/*
+*	Abstract class that models a continuous random variable.
+*/
+class ContinuousRandomVariable
+{
+
 };
 
 #endif
